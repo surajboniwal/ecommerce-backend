@@ -43,10 +43,44 @@ model Address{
 model Category{
   id String @unique @id @default(uuid()) @db.Uuid()
   name String
-  slug String
+  slug String @unique
   featured_image String
   active Boolean @default(true)
   parent_id String? @db.Uuid()
   Parent Category? @relation("Category",fields: [parent_id], references: [id])
   sub_categories Category[] @relation("Category")
+  products Product[]
+}
+
+model Product{
+  id String @unique @id @default(uuid()) @db.Uuid()
+  name String
+  slug String @unique
+  description String
+  active Boolean @default(true)
+  category Category @relation(fields: [category_id], references: [id])
+  category_id String @db.Uuid()
+  variants ProductVariant[]
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model ProductVariant{
+  id String @unique @id @default(uuid()) @db.Uuid()
+  name String
+  price Int
+  product_id String @db.Uuid()
+  product Product @relation(fields: [product_id], references: [id])
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  images ProductImage[]
+}
+
+model ProductImage{
+  id String @unique @id @default(uuid()) @db.Uuid()
+  image String
+  product_variant_id String @db.Uuid()
+  product_variant ProductVariant @relation(fields: [product_variant_id], references: [id])
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
